@@ -8,19 +8,19 @@
 #include <iostream>
 #include <vector>
 
-#include "stubs.hh"
+#define LOG_STUB_CALL(name, ...)                                        \
+    std::cout << "Calling "#name" = " << name(__VA_ARGS__) << std::endl
+
 #include "StubManager.hh"
+#include "stubs.hh"
 
 using namespace std;
 
-#define LOG_STUB_CALL(name, ...)                                \
-    cout << "Calling "#name" = " << name(__VA_ARGS__) << endl
+StubManager stubManager;
 
-StubManager manager;
-
-STUB_DEF(test10, int, 0, char, char);
-STUB_DEF(test20, float, 1.1, double, char);
-STUB_DEF(test30, float, 3.0, float, char);
+STUB_DEF(stubManager, test10, int, 0, char, char);
+STUB_DEF(stubManager, test20, float, 1.1, double, char);
+STUB_DEF(stubManager, test30, float, 3.0, float, char);
 
 int stub1(char arg1, char arg2)
 {
@@ -36,34 +36,49 @@ float stub31(float arg1, char arg2)
     return 3.1;
 }
 
+void test_01()
+{
+    cout << "---=== Executing " << __FUNCTION__ << " ===---" << endl;
+    stubManager.Reset();
+
+    STUB_ADD(stubManager, test10, &stub1);
+    STUB_ADD_EX(stubManager, test20, DEFAULT_STUB, 3);
+    STUB_ADD(stubManager, test30, &stub31);
+
+    test10(1, 2);
+    test20(1, 2);
+    test20(1, 2);
+    test30(1, 2);
+    test20(1, 2);
+
+    stubManager.CheckStubs();
+}
+
+void test_02()
+{
+    cout << "---=== Executing " << __FUNCTION__ << " ===---" << endl;
+    stubManager.Reset();
+
+    STUB_ADD(stubManager, test10, &stub1);
+    STUB_ADD_EX(stubManager, test20, DEFAULT_STUB, 2);
+    STUB_ADD(stubManager, test30, &stub31);
+
+    test30(1, 2);
+    test10(1, 2);
+    test20(1, 2);
+    test20(1, 2);
+
+    stubManager.CheckStubs();
+}
+
 int main()
 {
-    StabCalls calls;
+    test_01();
+    test_02();
 
-    manager.Reset();
-    calls.empty();
-
-    STUB_ADD(test10, &stub1, calls);
-    STUB_ADD_EX(test20, NULL, calls, 3);
-    STUB_ADD(test30, &stub31, calls);
-
-    LOG_STUB_CALL(test10, 1, 2);
-    LOG_STUB_CALL(test20, 1, 2);
-    LOG_STUB_CALL(test20, 1, 2);
-    LOG_STUB_CALL(test30, 1, 2);
-
-    manager.Reset();
-    calls.empty();
-
-    STUB_ADD(test30, &stub31, calls);
-
-    LOG_STUB_CALL(test10, 1, 2);
-    LOG_STUB_CALL(test20, 1, 2);
-    LOG_STUB_CALL(test20, 1, 2);
-
-    manager.check_stubs(calls);
     return 0;
 }
+
 
 
 

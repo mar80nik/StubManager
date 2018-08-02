@@ -12,7 +12,8 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
-#include "stubs.hh"
+
+#define DEFAULT_STUB NULL
 
 #define ASSERT(A, B, pRet)                                      \
     if(A != B)                                                  \
@@ -55,21 +56,26 @@ public:
 };
 typedef std::vector<StabCall> StabCalls;
 typedef StabCalls::iterator StabCallsIterator;
+typedef std::vector<void **> StabsPointers;
+typedef StabsPointers::iterator StabsPointersIterator;
 
 class StubManager
 {
-    StabCalls actualCalls;
+	StabCalls actualCalls;
+    StabCalls registeredCalls;
+    StabsPointers stubsPointers;
 public:
     StubManager();
     virtual ~StubManager();
     void Reset();
-    void AddCall(const std::string &func_name, void * func_pntr)
-    {
-        actualCalls.push_back(StabCall(func_name, func_pntr));
-    }
-    bool check_stubs(StabCalls& registeredCalls);
+	void ResetStubs();
+	void ResetActualCalls();
+	void ResetRegisteredCalls();
+	void AddStubPointer(void** pntr);
+	void AddActualCall(const std::string& func_name, void* func_pntr);
+	void AddRegisteredCall(const std::string& func_name, void* func_pntr);
+    bool CheckStubs();
 };
 
-extern StubManager manager;
-
+extern StubManager stubManager;
 #endif /* STUBMANAGER_HH_ */

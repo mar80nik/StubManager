@@ -8,13 +8,14 @@
 #ifndef STUBS_HH_
 #define STUBS_HH_
 
-#define STUB_DEF(name, retType, defReturn, Arg1Type, Arg2Type)  \
+#define STUB_DEF(manager, name, retType, defReturn, Arg1Type, Arg2Type)  \
     typedef retType (*pntr_type_##name)(Arg1Type, Arg2Type);    \
     pntr_type_##name pntr_##name = NULL;                        \
+                                                                \
     retType name(Arg1Type arg1, Arg2Type arg2)                  \
     {                                                           \
         retType Ret;                                            \
-        manager.AddCall(#name, (void *)pntr_##name);            \
+        manager.AddActualCall(#name, (void *)pntr_##name);      \
         if(pntr_##name != NULL)                                 \
         {                                                       \
             Ret = (*pntr_##name)(arg1, arg2);                   \
@@ -26,16 +27,16 @@
         return Ret;                                             \
     }
 
-#define STUB_ADD_EX(name, funcPntr, stubCalls, count)              \
+#define STUB_ADD_EX(manager, name, funcPntr, count)             \
     pntr_##name = funcPntr;                                     \
+    manager.AddStubPointer((void **)&pntr_##name);              \
     for(int i = 0; i < count; i++ )                             \
     {                                                           \
-        stubCalls.push_back(StabCall(#name,                     \
-                            (void*)funcPntr));                  \
+        manager.AddRegisteredCall(#name, (void*)funcPntr);      \
     }
 
-#define STUB_ADD(name, funcPntr, stubCalls)                     \
-        STUB_ADD_EX(name, funcPntr, stubCalls, 1)
+#define STUB_ADD(manager, name, funcPntr)                       \
+        STUB_ADD_EX(manager, name, funcPntr, 1)
 
 
 
