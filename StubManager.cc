@@ -12,6 +12,8 @@
 
 using namespace std;
 
+StubManager StubManager::stubManager;
+
 StubManager::StubManager()
 {
     Reset();
@@ -29,9 +31,8 @@ void StubManager::Reset()
     ResetStubs();
 }
 
-bool StubManager::CheckStubs()
+void StubManager::CheckStubs()
  {
-     bool ret = true;
      StabCallsIterator it;
 
      cout << "=================================================" << endl;
@@ -60,10 +61,10 @@ bool StubManager::CheckStubs()
      {
          cout << "=> STUB was not called with " << it->format() << endl;
      }
-     ASSERT(registeredCalls.size(), 0, &ret);
-     ASSERT(actualCalls.size(), 0, &ret);
+     ASSERT(registeredCalls.size(), 0);
+     ASSERT(actualCalls.size(), 0);
      cout << "=================================================" << endl;
-     return ret;
+     return;
 }
 
 void StubManager::AddActualCall(const std::string& func_name, void* func_pntr)
@@ -115,3 +116,9 @@ void StubManager::ResetStubs()
     }
     return;
 }
+
+StubManager& StubManager::GetInstance()
+{
+    return stubManager;
+}
+
