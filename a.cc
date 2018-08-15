@@ -8,14 +8,15 @@
 #include <iostream>
 #include <vector>
 
-#include "StubManager.hh"
-#include "stubs.hh"
+#include "a.hh"
 
 using namespace std;
 
-STUB_DEF(test10, int, 0, char, char);
-STUB_DEF(test20, float, 1.1, double, char);
-STUB_DEF(test30, float, 3.0, float, char);
+STUB_DEF(test10, int, 0, char, char)
+STUB_DEF(test20, float, 1.1, double, char)
+STUB_DEF(test30, float, 3.0, float, char)
+
+STUB_DEF(test40, float, 3.0, float, char, int)
 
 int stub1(char arg1, char arg2)
 {
